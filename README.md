@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jodi
 
-## Getting Started
+A family memory game played with real playing cards. Two to four players take turns flipping two cards; a *jodi* (pair) is two cards with the same rank and the same colour, such as 7♥ with 7♦. Find one and you go again. Most jodis wins.
 
-First, run the development server:
+## What is in it
+
+- **Invite-only family**: the first person to open the site becomes the admin. The admin makes one-time invite links (up to 4 members in total); each person picks their own name, password and animal.
+- **Tables**: any member opens a table, chooses a board size (16, 24, 36 or 52 cards) and whom to invite. The host deals once at least 2 players are seated. After the deal nobody new can join.
+- **Play again**: when a game ends, its players can carry straight on into the next one.
+- **Records**: every finished game is kept with scores, flips, best streak and duration, plus a family leaderboard.
+- **Fair play**: the server holds the deck. A browser is only ever told the cards that are face up.
+- Skip button if a player goes quiet for 30 seconds, leaving mid-game, sounds, confetti.
+
+## How it is built
+
+Next.js (App Router) + Tailwind CSS, deployed on Vercel. Data lives in Postgres (Neon). Browsers ask the server for news about once a second, which is plenty for a turn-based game and needs no extra realtime service.
+
+| Path | What it does |
+| --- | --- |
+| `lib/game.ts` | The rules, as pure functions |
+| `lib/api.ts` | Every server operation (accounts, invites, tables, moves, records) |
+| `lib/db.ts` | Database connection and tables (created automatically) |
+| `components/GameTable.tsx` | The game screen |
+
+## Run it on your computer
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+With no `DATABASE_URL` set, it uses an embedded Postgres saved in `./.localdb`, so there is nothing to install.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Import this repo into Vercel.
+2. In the project's **Storage** tab, add a **Neon** Postgres database (free plan). This sets `DATABASE_URL`.
+3. Redeploy, open the site, and create the admin account.
